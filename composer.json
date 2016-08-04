@@ -1,0 +1,13 @@
+{
+    "name": "root/checks",
+    "description": "Do checks to ensure DC is working as expected",
+    "authors": [
+        {
+            "name": "Adrian Crisan",
+            "email": "adrian.crisan@elder-studios.co.uk"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "~6.0"
+    }
+}
