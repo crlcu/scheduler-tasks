@@ -1,5 +1,5 @@
 {
-    "name": "root/checks",
+    "name": "crlcu/scheduler-checks",
     "description": "Do checks to ensure DC is working as expected",
     "authors": [
         {
