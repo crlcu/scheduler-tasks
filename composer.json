@@ -1,10 +1,10 @@
 {
     "name": "crlcu/scheduler-checks",
-    "description": "Do checks to ensure DC is working as expected",
+    "description": "A list of utils for scheduler tasks.",
     "authors": [
         {
             "name": "Adrian Crisan",
-            "email": "adrian.crisan@elder-studios.co.uk"
+            "email": "adrian.crisan88@gmail.com"
         }
     ],
     "require": {
