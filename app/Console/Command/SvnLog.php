@@ -9,16 +9,15 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\DomCrawler\Crawler;
 
 use App\Model\LogEntry;
 
-class Svn extends Command
+class SvnLog extends Command
 {
     protected function configure()
     {
-        $this->setName('svn:do')
-            ->setDescription("Outputs Hello World")
+        $this->setName('svn:log')
+            ->setDescription("Outputs the svn log.")
             ->setDefinition(
                 new InputDefinition([
                     new InputOption('repository', 'r', InputOption::VALUE_OPTIONAL, 'SVN Repository', 'https://src.dev.tempest-technology.com/svn/self_service/trunk'),
@@ -32,7 +31,7 @@ class Svn extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $cmd = sprintf("svn log --username '%s' --password '%s' -r %s:%s --xml %s",
+        $cmd = sprintf("echo 'p' | svn log --username '%s' --password '%s' -r %s:%s --xml %s",
             $input->getOption('username'),
             $input->getOption('password'),
             $input->getOption('start'),
@@ -54,7 +53,8 @@ class Svn extends Command
         foreach ($xml->logentry as $log)
         {
             $entry = new LogEntry((array)$log);
-            $output->writeln($entry->revision() . ' -> ' . $entry->fogbugz() . ' -> ' . $entry->toString());
+            #$output->writeln($entry->revision() . ' -> ' . $entry->fogbugz() . ' -> ' . $entry->toString());
+            $output->writeln($entry->toString());
         }
     }
 }
