@@ -4,19 +4,13 @@ require 'vendor/autoload.php';
 require 'exceptions.php';
 require 'checks.php';
 
-$options = [];
-
-for ($i = 1; $i < $argc; $i++) {
-    list($name, $value) = explode('=', $argv[$i]);
-
-    $options[ str_replace('--', '', $name) ] = $value;
-}
+$options = new App\Util\Options($argc, $argv);
 
 $client = new GuzzleHttp\Client();
 
-//echo sprintf("Going to fetch content from: %s\n", $options['host']);
+//echo sprintf("Going to fetch content from: %s\n", $options->get('host'));
 
-$response = $client->request('GET', $options['host'], [
+$response = $client->request('GET', $options->get('host'), [
     'auth' => ['wholesale-robot', 'wholesale-robot-password']
 ]);
 
