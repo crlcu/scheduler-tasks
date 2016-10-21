@@ -43,19 +43,48 @@ class LogEntry {
         return $this->fields['@attributes']['revision'];
     }
 
+    public function revisionUrl()
+    {
+        return $this->fields['revisionUrl'];
+    }
+
     public function toArray()
     {
         return [
-            'author'    => $this->author(),
-            'case'      => $this->fogbugz(),
-            'date'      => $this->date(),
-            'message'   => $this->message(),
-            'revision'  => $this->revision(),
+            'author'        => $this->author(),
+            'case'          => $this->fogbugz(),
+            'date'          => $this->date(),
+            'message'       => $this->message(),
+            'revision'      => $this->revision(),
+            'revisionUrl'   => $this->revisionUrl() . $this->revision(),
         ];
     }
 
     public function toString()
     {
         return sprintf('%s - %s', $this->message(), $this->author());
+    }
+
+    public function toHtml()
+    {
+        $string = sprintf('<b>Commit Time:</b> %s', $this->date());
+
+        if ($this->revisionUrl())
+        {
+            $string .= sprintf(', <b>Revision:</b> <a href="%s%s">%s</a>', $this->revisionUrl(), $this->revision(), $this->revision());
+        }
+        else
+        {
+            $string .= sprintf(', <b>Revision:</b> %s', $this->revision());
+        }
+
+        $string .= sprintf(', %s - %s', $this->message(), $this->author());
+
+        if ($this->fogbugz())
+        {
+            $string .= sprintf(' <a href="https://daisydev.fogbugz.com/f/cases/%s">View case</a>', $this->fogbugz());
+        }
+
+        return sprintf('<p>%s</p>', $string);
     }
 }

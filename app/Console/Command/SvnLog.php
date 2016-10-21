@@ -21,6 +21,7 @@ class SvnLog extends Command
             ->setDefinition(
                 new InputDefinition([
                     new InputOption('repository', 'r', InputOption::VALUE_OPTIONAL, 'SVN Repository', 'https://src.dev.tempest-technology.com/svn/self_service/trunk'),
+                    new InputOption('revision-url', 'ru', InputOption::VALUE_OPTIONAL, 'Revision url'),
                     new InputOption('username', 'u', InputOption::VALUE_OPTIONAL, 'SVN Username'),
                     new InputOption('password', 'p', InputOption::VALUE_OPTIONAL, 'SVN Password'),
                     new InputOption('start', 's', InputOption::VALUE_REQUIRED, 'Start revision'),
@@ -52,9 +53,11 @@ class SvnLog extends Command
 
         foreach ($xml->logentry as $log)
         {
-            $entry = new LogEntry((array)$log);
-            #$output->writeln($entry->revision() . ' -> ' . $entry->fogbugz() . ' -> ' . $entry->toString());
-            $output->writeln($entry->toString());
+            $params = (array)$log;
+            $params['revisionUrl'] = $input->getOption('revision-url');
+
+            $entry = new LogEntry($params);
+            $output->write($entry->toHtml());
         }
     }
 }
