@@ -2,9 +2,13 @@
 <?php
 require __DIR__.'/vendor/autoload.php';
 
+use Dotenv\Dotenv;
 use Symfony\Component\Console\Application;
 
-$application = new Application();
+$dotenv = new Dotenv(__DIR__);
+$dotenv->load();
+
+$application = new Application('Tasks Scheduler console', '0.9');
 
 $commands = require_once __DIR__.'/commands.php';
 

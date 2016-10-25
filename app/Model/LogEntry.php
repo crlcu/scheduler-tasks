@@ -78,7 +78,7 @@ class LogEntry {
             $string .= sprintf(', <b>Revision:</b> %s', $this->revision());
         }
 
-        $string .= sprintf(', %s - %s', $this->message(), $this->author());
+        $string .= sprintf(', %s - <b>%s</b>', $this->message(), $this->author());
 
         if ($this->fogbugz())
         {
