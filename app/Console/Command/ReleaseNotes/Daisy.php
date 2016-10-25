@@ -141,7 +141,7 @@ class Daisy extends Command
         // Create the Mailer using your created Transport
         $mailer = Swift_Mailer::newInstance($transport);
 
-        $loader = new Twig_Loader_Filesystem('/var/www/html/scheduler/tasks/resources');
+        $loader = new Twig_Loader_Filesystem(getenv('TEMPLATES'));
         $twig = new Twig_Environment($loader);
 
         $mail = Swift_Message::newInstance()
