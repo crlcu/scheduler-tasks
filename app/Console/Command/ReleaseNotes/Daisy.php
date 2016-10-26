@@ -33,7 +33,8 @@ class Daisy extends Command
                     new InputOption('self-service', null, InputOption::VALUE_REQUIRED, 'SelfService start,end revisions'),
                     new InputOption('acc4billing', null, InputOption::VALUE_REQUIRED, 'Acc4billing start,end revisions'),
                     new InputOption('dwp', null, InputOption::VALUE_REQUIRED, 'DWP start,end revisions'),
-                    new InputOption('external-users', null, InputOption::VALUE_REQUIRED, 'ExternalUsers start,end revisions'),
+                    new InputOption('external-users', null, InputOption::VALUE_REQUIRED, 'External Users start,end revisions'),
+                    new InputOption('external-api', null, InputOption::VALUE_REQUIRED, 'External API start,end revisions'),
                 ])
             );
     }
@@ -102,6 +103,22 @@ class Daisy extends Command
                 $input->getOption('external-users'),
                 getenv('EXTERNAL_USERS_REPOSITORY'),
                 getenv('EXTERNAL_USERS_REVISION_URL')
+            );
+
+            $svnLogOutput->writeln('');
+        }
+
+        // external-api
+        if ($input->getOption('external-api'))
+        {
+            $svnLogOutput->writeln('<b style="font-size: 14px">External API APP:</b>');
+
+            $this->svnLog(
+                $input,
+                $svnLogOutput,
+                $input->getOption('external-api'),
+                getenv('EXTERNAL_API_REPOSITORY'),
+                getenv('EXTERNAL_API_REVISION_URL')
             );
 
             $svnLogOutput->writeln('');
