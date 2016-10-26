@@ -28,7 +28,7 @@ class LogEntry {
         $message = $this->message();
         $matches = [];
 
-        $ok = preg_match('/(fb|fogbugz|case)(\d+)(:|\s-|\s)/i', $message, $matches);
+        $ok = preg_match('/(fb|fb:|fogbugz|case)?(\d+)(:|,|.|\s-|\s)/i', $message, $matches);
 
         return isset($matches[2]) ? $matches[2] : null;
     }
