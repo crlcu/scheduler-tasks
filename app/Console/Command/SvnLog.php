@@ -51,13 +51,20 @@ class SvnLog extends Command
 
         $xml = simplexml_load_string(utf8_decode($process->getOutput()));
 
-        foreach ($xml->logentry as $log)
+        if ($xml->logentry)
         {
-            $params = (array)$log;
-            $params['revisionUrl'] = $input->getOption('revision-url');
+            foreach ($xml->logentry as $log)
+            {
+                $params = (array)$log;
+                $params['revisionUrl'] = $input->getOption('revision-url');
 
-            $entry = new LogEntry($params);
-            $output->write($entry->toHtml());
+                $entry = new LogEntry($params);
+                $output->write($entry->toHtml());
+            }
+        }
+        else
+        {
+            $output->writeln('<p>No updates.</p>');
         }
     }
 }
