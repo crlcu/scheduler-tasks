@@ -64,7 +64,7 @@ class SvnLog extends Command
         }
         else
         {
-            $output->writeln('<p>No updates.</p>');
+            $output->writeln('No updates.');
         }
     }
 }

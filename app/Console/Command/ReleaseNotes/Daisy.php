@@ -61,7 +61,7 @@ class Daisy extends Command
 
                 $svnLogOutput->writeln('');
             } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln('<p>No updates.</p>');
+                $svnLogOutput->writeln('No updates.');
             }
         }
 
@@ -81,7 +81,7 @@ class Daisy extends Command
 
                 $svnLogOutput->writeln('');
             } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln('<p>No updates.</p>');
+                $svnLogOutput->writeln('No updates.');
             }
         }
 
@@ -101,7 +101,7 @@ class Daisy extends Command
 
                 $svnLogOutput->writeln('');
             } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln('<p>No updates.</p>');
+                $svnLogOutput->writeln('No updates.');
             }
         }
 
@@ -121,7 +121,7 @@ class Daisy extends Command
 
                 $svnLogOutput->writeln('');
             } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln('<p>No updates.</p>');
+                $svnLogOutput->writeln('No updates.');
             }
         }
 
@@ -141,7 +141,7 @@ class Daisy extends Command
 
                 $svnLogOutput->writeln('');
             } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln('<p>No updates.</p>');
+                $svnLogOutput->writeln('No updates.');
             }
         }
 
