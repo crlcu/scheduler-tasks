@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 use Twig_Loader_Filesystem;
 use Twig_Environment;
@@ -49,15 +50,19 @@ class Daisy extends Command
         {
             $svnLogOutput->writeln('<b style="font-size: 14px">SelfService:</b>');
 
-            $this->svnLog(
-                $input,
-                $svnLogOutput,
-                $input->getOption('self-service'),
-                getenv('DC_REPOSITORY'),
-                getenv('DC_REVISION_URL')
-            );
+            try {
+                $this->svnLog(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('self-service'),
+                    getenv('DC_REPOSITORY'),
+                    getenv('DC_REVISION_URL')
+                );
 
-            $svnLogOutput->writeln('');
+                $svnLogOutput->writeln('');
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln('<p>No updates.</p>');
+            }
         }
 
         //acc4billing
@@ -65,15 +70,19 @@ class Daisy extends Command
         {
             $svnLogOutput->writeln('<b style="font-size: 14px">Acc4Billing:</b>');
 
-            $this->svnLog(
-                $input,
-                $svnLogOutput,
-                $input->getOption('acc4billing'),
-                getenv('ACC4BILLING_REPOSITORY'),
-                getenv('ACC4BILLIN_REVISION_URL')
-            );
+            try {
+                $this->svnLog(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('acc4billing'),
+                    getenv('ACC4BILLING_REPOSITORY'),
+                    getenv('ACC4BILLIN_REVISION_URL')
+                );
 
-            $svnLogOutput->writeln('');
+                $svnLogOutput->writeln('');
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln('<p>No updates.</p>');
+            }
         }
 
         // dwp
@@ -81,15 +90,19 @@ class Daisy extends Command
         {
             $svnLogOutput->writeln('<b style="font-size: 14px">DWP:</b>');
             
-            $this->svnLog(
-                $input,
-                $svnLogOutput,
-                $input->getOption('dwp'),
-                getenv('DWP_REPOSITORY'),
-                getenv('DWP_REVISION_URL')
-            );
+            try {
+                $this->svnLog(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('dwp'),
+                    getenv('DWP_REPOSITORY'),
+                    getenv('DWP_REVISION_URL')
+                );
 
-            $svnLogOutput->writeln('');
+                $svnLogOutput->writeln('');
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln('<p>No updates.</p>');
+            }
         }
 
         // external-users
@@ -97,15 +110,19 @@ class Daisy extends Command
         {
             $svnLogOutput->writeln('<b style="font-size: 14px">External Users:</b>');
 
-            $this->svnLog(
-                $input,
-                $svnLogOutput,
-                $input->getOption('external-users'),
-                getenv('EXTERNAL_USERS_REPOSITORY'),
-                getenv('EXTERNAL_USERS_REVISION_URL')
-            );
+            try {
+                $this->svnLog(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('external-users'),
+                    getenv('EXTERNAL_USERS_REPOSITORY'),
+                    getenv('EXTERNAL_USERS_REVISION_URL')
+                );
 
-            $svnLogOutput->writeln('');
+                $svnLogOutput->writeln('');
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln('<p>No updates.</p>');
+            }
         }
 
         // external-api
@@ -113,15 +130,19 @@ class Daisy extends Command
         {
             $svnLogOutput->writeln('<b style="font-size: 14px">External API APP:</b>');
 
-            $this->svnLog(
-                $input,
-                $svnLogOutput,
-                $input->getOption('external-api'),
-                getenv('EXTERNAL_API_REPOSITORY'),
-                getenv('EXTERNAL_API_REVISION_URL')
-            );
+            try {
+                $this->svnLog(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('external-api'),
+                    getenv('EXTERNAL_API_REPOSITORY'),
+                    getenv('EXTERNAL_API_REVISION_URL')
+                );
 
-            $svnLogOutput->writeln('');
+                $svnLogOutput->writeln('');
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln('<p>No updates.</p>');
+            }
         }
 
         $notes = $svnLogOutput->fetch();
