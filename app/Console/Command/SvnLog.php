@@ -20,12 +20,13 @@ class SvnLog extends Command
             ->setDescription("Outputs the svn log.")
             ->setDefinition(
                 new InputDefinition([
-                    new InputOption('repository', 'r', InputOption::VALUE_OPTIONAL, 'SVN Repository', 'https://src.dev.tempest-technology.com/svn/self_service/trunk'),
+                    new InputOption('repository', 'r', InputOption::VALUE_OPTIONAL, 'SVN Repository'),
                     new InputOption('revision-url', 'ru', InputOption::VALUE_OPTIONAL, 'Revision url'),
                     new InputOption('username', 'u', InputOption::VALUE_OPTIONAL, 'SVN Username'),
                     new InputOption('password', 'p', InputOption::VALUE_OPTIONAL, 'SVN Password'),
                     new InputOption('start', 's', InputOption::VALUE_REQUIRED, 'Start revision'),
                     new InputOption('end', 'e', InputOption::VALUE_OPTIONAL, 'End revision', 'HEAD'),
+                    new InputOption('html', null, InputOption::VALUE_NONE, 'Output as html.'),
                 ])
             );
     }
@@ -59,7 +60,15 @@ class SvnLog extends Command
                 $params['revisionUrl'] = $input->getOption('revision-url');
 
                 $entry = new LogEntry($params);
-                $output->write($entry->toHtml());
+
+                if ($input->getOption('html'))
+                {
+                    $output->writeln($entry->toHtml());
+                }
+                else
+                {
+                    $output->writeln($entry->toString());
+                }
             }
         }
         else
