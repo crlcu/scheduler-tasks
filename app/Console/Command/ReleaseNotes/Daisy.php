@@ -257,7 +257,7 @@ class Daisy extends Command
     {
         if ($this->input->getOption('html'))
         {
-            $title = sprintf('<b style="font-size: 14px">%s:</b>', $title);
+            $title = sprintf('<b style="font-size: 14px">%s</b>', $title);
         }
 
         return $title;

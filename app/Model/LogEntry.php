@@ -67,24 +67,24 @@ class LogEntry {
 
     public function toHtml()
     {
-        $string = sprintf('<b>Commit Time:</b> %s', $this->date());
+        $html = sprintf('<b>Commit Time:</b> %s', $this->date());
 
         if ($this->revisionUrl())
         {
-            $string .= sprintf(', <b>Revision:</b> <a href="%s%s">%s</a>', $this->revisionUrl(), $this->revision(), $this->revision());
+            $html .= sprintf(', <b>Revision:</b> <a href="%s%s">%s</a>', $this->revisionUrl(), $this->revision(), $this->revision());
         }
         else
         {
-            $string .= sprintf(', <b>Revision:</b> %s', $this->revision());
+            $html .= sprintf(', <b>Revision:</b> %s', $this->revision());
         }
 
-        $string .= sprintf(', %s - <b>%s</b>', $this->message(), $this->author());
+        $html .= sprintf(', %s - <b>%s</b>', $this->message(), $this->author());
 
         if ($this->fogbugz())
         {
-            $string .= sprintf(' <a href="https://daisydev.fogbugz.com/f/cases/%s">View case</a>', $this->fogbugz());
+            $html .= sprintf(' <a href="https://daisydev.fogbugz.com/f/cases/%s">View case</a>', $this->fogbugz());
         }
 
-        return sprintf('<p>%s</p>', $string);
+        return $html;
     }
 }
