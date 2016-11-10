@@ -33,6 +33,7 @@ class Daisy extends Command
                 new InputDefinition([
                     new InputOption('notify', null, InputOption::VALUE_OPTIONAL, 'List of emails separated by comma'),
                     new InputOption('send-email', null, InputOption::VALUE_NONE, 'Send email.'),
+                    new InputOption('subject', null, InputOption::VALUE_OPTIONAL, 'Email subject.'),
                     new InputOption('html', null, InputOption::VALUE_NONE, 'Output as html.'),
                     new InputOption('username', null, InputOption::VALUE_OPTIONAL, 'SVN Username'),
                     new InputOption('password', null, InputOption::VALUE_OPTIONAL, 'SVN Password'),
@@ -197,7 +198,7 @@ class Daisy extends Command
         $twig = new Twig_Environment($loader);
 
         $mail = Swift_Message::newInstance()
-            ->setSubject(sprintf('Release notes for %s', date('d/m/Y')))
+            ->setSubject($this->input->getOption('subject') ? : sprintf('Release notes for %s', date('d/m/Y')))
             ->setFrom([getenv('MAIL_FROM_EMAIL') => getenv('MAIL_FROM_NAME')])
             ->setTo($to)
             ->setBody($twig->render('emails/release-notes.html', ['message' => $message]), 'text/html');
