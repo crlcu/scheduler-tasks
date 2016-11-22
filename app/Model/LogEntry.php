@@ -35,7 +35,7 @@ class LogEntry {
 
     public function message()
     {
-        return $this->fields['msg'];
+        return rtrim($this->fields['msg']);
     }
 
     public function revision()
