@@ -23,7 +23,8 @@ use Swift_Mailer;
 class Daisy extends Command
 {
     private $input;
-    private $command;
+    private $svnLogCommand;
+    private $svnStatsCommand;
 
     protected function configure()
     {
@@ -54,13 +55,27 @@ class Daisy extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
-        $this->command = $this->getApplication()->find('svn:log');
+        
+        $this->svnLogCommand = $this->getApplication()->find('svn:log');
+        $this->svnStatsCommand = $this->getApplication()->find('svn:stats');
+
         $svnLogOutput = new BufferedOutput();
 
         // self-service
         if (!$input->getOption('exclude-self-service'))
         {
-            $svnLogOutput->writeln($this->__title('SelfService:'));
+            $svnLogOutput->write($this->__title('SelfService:'));
+
+            try {
+                $this->svnStats(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('self-service'),
+                    getenv('DC_REPOSITORY')
+                );
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln("Couldn't fetch stats.");
+            }
 
             try {
                 $this->svnLog(
@@ -80,7 +95,18 @@ class Daisy extends Command
         //acc4billing
         if (!$input->getOption('exclude-acc4billing'))
         {
-            $svnLogOutput->writeln($this->__title('Acc4Billing:'));
+            $svnLogOutput->write($this->__title('Acc4Billing:'));
+
+            try {
+                $this->svnStats(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('acc4billing'),
+                    getenv('ACC4BILLING_REPOSITORY')
+                );
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln("Couldn't fetch stats.");
+            }
 
             try {
                 $this->svnLog(
@@ -100,8 +126,19 @@ class Daisy extends Command
         // dwp
         if (!$input->getOption('exclude-dwp'))
         {
-            $svnLogOutput->writeln($this->__title('DWP:'));
+            $svnLogOutput->write($this->__title('DWP:'));
             
+            try {
+                $this->svnStats(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('dwp'),
+                    getenv('DWP_REPOSITORY')
+                );
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln("Couldn't fetch stats.");
+            }
+
             try {
                 $this->svnLog(
                     $input,
@@ -120,7 +157,18 @@ class Daisy extends Command
         // external-users
         if (!$input->getOption('exclude-external-users'))
         {
-            $svnLogOutput->writeln($this->__title('External Users:'));
+            $svnLogOutput->write($this->__title('External Users:'));
+
+            try {
+                $this->svnStats(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('external-users'),
+                    getenv('EXTERNAL_USERS_REPOSITORY')
+                );
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln("Couldn't fetch stats.");
+            }
 
             try {
                 $this->svnLog(
@@ -140,7 +188,18 @@ class Daisy extends Command
         // external-api
         if (!$input->getOption('exclude-external-api'))
         {
-            $svnLogOutput->writeln($this->__title('External API APP:'));
+            $svnLogOutput->write($this->__title('External API APP:'));
+
+            try {
+                $this->svnStats(
+                    $input,
+                    $svnLogOutput,
+                    $input->getOption('external-api'),
+                    getenv('EXTERNAL_API_REPOSITORY')
+                );
+            } catch (ProcessFailedException $e) {
+                $svnLogOutput->writeln("Couldn't fetch stats.");
+            }
 
             try {
                 $this->svnLog(
@@ -178,7 +237,20 @@ class Daisy extends Command
             '--html'            => $input->getOption('html'),
         );
 
-        $returnCode = $this->command->run(new ArrayInput($arguments), $output);
+        $returnCode = $this->svnLogCommand->run(new ArrayInput($arguments), $output);
+    }
+
+    protected function svnStats($input, $output, $revisions, $repository)
+    {
+        $arguments = array(
+            '--username'        => $input->getOption('username'),
+            '--password'        => $input->getOption('password'),
+            '--start'           => $this->__start($revisions),
+            '--end'             => $this->__end($revisions),
+            '--repository'      => $repository,
+        );
+
+        $returnCode = $this->svnStatsCommand->run(new ArrayInput($arguments), $output);
     }
 
     protected function sendMail($to, $message)
