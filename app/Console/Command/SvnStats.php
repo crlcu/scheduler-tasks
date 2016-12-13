@@ -42,8 +42,8 @@ class SvnStats extends Command
 
         $process = new Process($cmd);
         
-        $process->setTimeout(5 * 60);
-        $process->setIdleTimeout(5 * 60);
+        $process->setTimeout(15 * 60);
+        $process->setIdleTimeout(15 * 60);
 
         $process->run();
 
