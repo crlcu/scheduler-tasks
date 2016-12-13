@@ -33,6 +33,7 @@ class Daisy extends Command
             ->setDefinition(
                 new InputDefinition([
                     new InputOption('notify', null, InputOption::VALUE_OPTIONAL, 'List of emails separated by comma'),
+                    new InputOption('stats', null, InputOption::VALUE_NONE, 'Include svn stats.'),
                     new InputOption('send-email', null, InputOption::VALUE_NONE, 'Send email.'),
                     new InputOption('subject', null, InputOption::VALUE_OPTIONAL, 'Email subject.'),
                     new InputOption('html', null, InputOption::VALUE_NONE, 'Output as html.'),
@@ -238,10 +239,18 @@ class Daisy extends Command
         );
 
         $returnCode = $this->svnLogCommand->run(new ArrayInput($arguments), $output);
+
+        return $returnCode;
     }
 
     protected function svnStats($input, $output, $revisions, $repository)
     {
+        if (!$input->getOption('stats')) {
+            $output->writeln('');
+
+            return 1;
+        }
+
         $arguments = array(
             '--username'        => $input->getOption('username'),
             '--password'        => $input->getOption('password'),
@@ -251,6 +260,8 @@ class Daisy extends Command
         );
 
         $returnCode = $this->svnStatsCommand->run(new ArrayInput($arguments), $output);
+
+        return $returnCode;
     }
 
     protected function sendMail($to, $message)
