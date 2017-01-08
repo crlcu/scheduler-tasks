@@ -30,6 +30,7 @@ class Crawl extends Command
                 new InputDefinition([
                     new InputOption('url', null, InputOption::VALUE_REQUIRED, 'URL'),
                     new InputOption('debug', null, InputOption::VALUE_NONE, 'Enable debug output'),
+                    new InputOption('html', null, InputOption::VALUE_NONE, 'Output as html.'),
                 ])
             );
         
@@ -53,7 +54,15 @@ class Crawl extends Command
                 $news = new News($item);
 
                 if ($news->condition()) {
-                    echo $news->get('title') . "\n";
+                    if ($input->getOption('html'))
+                    {
+                        $output->writeln($news->toHtml());
+                    }
+                    else
+                    {
+                        $output->writeln($news->toString());
+                    }
+
                     //dump($news->howMany());
                 }
             }

@@ -11,6 +11,11 @@ class News {
         $this->fields = $fields;
     }
 
+    public function date()
+    {
+        return new Carbon($this->get('pubDate'));
+    }
+
     public function fullContent()
     {
         return sprintf('%s %s', $this->fields['title'], $this->fields['description']);
@@ -32,7 +37,7 @@ class News {
             'rutier',
             'victimă', 'victime'
         ];
-        
+
         $pattern = sprintf('/(auto)?.*(%s).*(auto|rutier)?/i', join('|', $words));
 
         if (preg_match($pattern, $this->fullContent(), $matches)) {
@@ -73,5 +78,15 @@ class News {
             dump(current($matches));
             dump(end($matches));
         }
+    }
+
+    public function toString()
+    {
+        return sprintf('%s - %s', $this->get('pubDate'), $this->get('title'));
+    }
+
+    public function toHtml()
+    {
+        return sprintf('<a href="%s">%s - %s</a>', $this->get('link'), $this->date(), $this->get('title'));
     }
 }
