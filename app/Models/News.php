@@ -11,7 +11,7 @@ class News {
         $this->fields = $fields;
 
         // Set aditional fields
-        $this->fields['date'] = new Carbon($this->fields['pubDate'] ? : 'now');
+        $this->fields['date'] = new Carbon(isset($this->fields['pubDate']) ? $this->fields['pubDate'] : 'now');
     }
 
     public function fullContent()
