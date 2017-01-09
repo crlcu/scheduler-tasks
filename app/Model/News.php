@@ -42,6 +42,8 @@ class News {
 
     public function isNewerThan($date)
     {
+        $date = new Carbon($date);
+
         return $this->date >= $date;
     }
 
