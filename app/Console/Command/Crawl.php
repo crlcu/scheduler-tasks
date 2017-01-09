@@ -43,7 +43,7 @@ class Crawl extends Command
 
         foreach ($urls as $url)
         {
-            $this->crawlUrl($input->getOption('url'), $input, $output);
+            $this->crawlUrl($url, $input, $output);
         }
     }
 

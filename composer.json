@@ -25,10 +25,5 @@
         "psr-4": {
             "App\\": "app/"
         }
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "php -r \"copy('.env.example', '.env');\""
-        ]
     }
 }
