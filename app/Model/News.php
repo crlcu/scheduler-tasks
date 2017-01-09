@@ -25,16 +25,13 @@ class News {
 
         $words = [
             'accident',
-            'maşina', 'masina',
-            'rănit', 'ranit', 'raniti', 'răniţi',
-            'rutier',
-            'victimă', 'victime'
+            '(auto|maşina|maşină|rutier|stradă|strada|tir)'
         ];
 
-        $pattern = sprintf('/(auto)?.*(%s).*(auto|rutier)?/i', join('|', $words));
+        $pattern = sprintf('/(%s)/i', join('[\d\D\w\W\s]+', $words));
 
         if (preg_match($pattern, $this->fullContent(), $matches)) {
-            $ok = !empty(array_intersect($matches, ['accident', 'auto', 'maşina', 'masina', 'rutier']));
+            $ok = true;
         }
 
         return $ok;

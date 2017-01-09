@@ -39,6 +39,8 @@ class Crawl extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        //date_default_timezone_set('Europe/Bucharest');
+
         $urls = split(', ', $input->getOption('url'));
 
         foreach ($urls as $url)
