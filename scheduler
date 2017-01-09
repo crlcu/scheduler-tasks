@@ -1,19 +1,53 @@
 #!/usr/bin/env php
 <?php
-require __DIR__.'/vendor/autoload.php';
+
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| our application. We just need to utilize it! We'll simply require it
+| into the script here so that we don't have to worry about manual
+| loading any of our classes later on. It feels nice to relax.
+|
+*/
+
+require __DIR__.'/bootstrap/autoload.php';
+
+/*
+|--------------------------------------------------------------------------
+| Load the config file
+|--------------------------------------------------------------------------
+*/
 
 use Dotenv\Dotenv;
-use Symfony\Component\Console\Application;
 
 $dotenv = new Dotenv(__DIR__);
 $dotenv->load();
 
-$application = new Application('Tasks Scheduler console', '0.9');
+/*
+|--------------------------------------------------------------------------
+| Power up database capsule
+|--------------------------------------------------------------------------
+*/
 
-$commands = require_once __DIR__.'/commands.php';
+$capsule = require_once __DIR__.'/bootstrap/database.php';
 
-foreach ($commands as $command) {
-    $application->add(new $command());
-}
+$capsule->bootEloquent();
+
+/*
+|--------------------------------------------------------------------------
+| Turn On The Lights
+|--------------------------------------------------------------------------
+*/
+
+$application = require_once __DIR__.'/bootstrap/app.php';
+
+/*
+|--------------------------------------------------------------------------
+| Run The Application
+|--------------------------------------------------------------------------
+*/
 
 $application->run();
