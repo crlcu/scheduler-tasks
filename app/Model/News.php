@@ -92,6 +92,6 @@ class News {
 
     public function __toHtml()
     {
-        return sprintf('<a href="%s">%s - %s</a>', $this->link, $this->date, $this->title);
+        return sprintf('%s - %s <a href="%s">Vezi stirea</a>', $this->date, $this->title, $this->link);
     }
 }
