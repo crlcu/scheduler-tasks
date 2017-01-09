@@ -1,12 +1,12 @@
 <?php
-namespace App\Model;
+namespace App\Models;
 
 use Carbon\Carbon;
 
 class News {
     protected $fields;
 
-    public function __construct($fields)
+    public function __construct($fields = [])
     {
         $this->fields = $fields;
 

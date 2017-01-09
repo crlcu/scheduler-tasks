@@ -1,22 +1,20 @@
 <?php
 namespace App\Console\Command;
 
+use Illuminate\Support\Collection;
+
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 
 use Exception;
 use GuzzleHttp\Client as Http;
 use GuzzleHttp\Exception\RequestException;
 use SimpleXMLElement;
 
-use App\Model\News;
+use App\Models\News;
 
 class Crawl extends Command
 {
@@ -39,18 +37,44 @@ class Crawl extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        date_default_timezone_set('Europe/Bucharest');
-
         $urls = split(', ', $input->getOption('url'));
+
+        $collection = new Collection();
 
         foreach ($urls as $url)
         {
-            $this->crawlUrl($url, $input, $output);
+            $local = $this->crawlUrl($url, $input, $output);
+
+            if ($local->count())
+            {
+                $collection = $collection->merge($local);
+            }
+        }
+
+        $collection = $collection->sortBy(function($item) {
+            return $item->date;
+        });
+
+        if ($input->getOption('html'))
+        {
+            foreach ($collection as $news)
+            {
+                $output->writeln($news->__toHtml());
+            }
+        }
+        else
+        {
+            foreach ($collection as $news)
+            {
+                $output->writeln($news->__toString());
+            }
         }
     }
 
     protected function crawlUrl($url, $input, $output)
     {
+        $collection = new Collection();
+
         try {
             $response = $this->http->request('GET', $url);
 
@@ -65,19 +89,14 @@ class Crawl extends Command
 
                 if ($news->isAboutCarCrashes() && $news->isNewerThan($input->getOption('from')))
                 {
-                    if ($input->getOption('html'))
-                    {
-                        $output->writeln($news->__toHtml());
-                    }
-                    else
-                    {
-                        $output->writeln($news->__toString());
-                    }
+                    $collection->push($news);
                 }
             }
         } catch (RequestException $e) {
             throw new Exception(sprintf('Could not access remote site. (%s)', $url));
         }
+
+        return $collection;
     }
 
     protected function xml2array($parent) {
