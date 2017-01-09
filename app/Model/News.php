@@ -9,24 +9,17 @@ class News {
     public function __construct($fields)
     {
         $this->fields = $fields;
-    }
 
-    public function date()
-    {
-        return new Carbon($this->get('pubDate'));
+        // Set aditional fields
+        $this->fields['date'] = new Carbon($this->fields['pubDate']);
     }
 
     public function fullContent()
     {
-        return sprintf('%s %s', $this->fields['title'], $this->fields['description']);
+        return sprintf('%s %s', $this->title, $this->description);
     }
 
-    public function get($field)
-    {
-        return $this->fields[$field];
-    }
-
-    public function condition()
+    public function isAboutCarCrashes()
     {
         $ok = false;
 
@@ -45,6 +38,11 @@ class News {
         }
 
         return $ok;
+    }
+
+    public function isNewerThan($date)
+    {
+        return $this->date >= $date;
     }
 
     private function howManyRegex()
@@ -80,13 +78,18 @@ class News {
         }
     }
 
-    public function toString()
+    public function __get($field)
     {
-        return sprintf('%s - %s', $this->get('pubDate'), $this->get('title'));
+        return $this->fields[$field];
     }
 
-    public function toHtml()
+    public function __toString()
     {
-        return sprintf('<a href="%s">%s - %s</a>', $this->get('link'), $this->date(), $this->get('title'));
+        return sprintf('%s - %s', $this->date, $this->title);
+    }
+
+    public function __toHtml()
+    {
+        return sprintf('<a href="%s">%s - %s</a>', $this->link, $this->date, $this->title);
     }
 }

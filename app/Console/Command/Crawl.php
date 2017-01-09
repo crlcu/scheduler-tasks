@@ -29,7 +29,7 @@ class Crawl extends Command
             ->setDefinition(
                 new InputDefinition([
                     new InputOption('url', null, InputOption::VALUE_REQUIRED, 'URL'),
-                    new InputOption('debug', null, InputOption::VALUE_NONE, 'Enable debug output'),
+                    new InputOption('from', null, InputOption::VALUE_OPTIONAL, 'News newer than.', 'yesterday'),
                     new InputOption('html', null, InputOption::VALUE_NONE, 'Output as html.'),
                 ])
             );
@@ -39,11 +39,19 @@ class Crawl extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try {
-            $response = $this->http->request('GET', $input->getOption('url'));
+        $urls = split(', ', $input->getOption('url'));
 
-            // $xmlString = require_once('xml.php');
-            // $crawler = new SimpleXMLElement($xmlString);
+        foreach ($urls as $url)
+        {
+            $this->crawlUrl($input->getOption('url'), $input, $output);
+        }
+    }
+
+    protected function crawlUrl($url, $input, $output)
+    {
+        try {
+            $response = $this->http->request('GET', $url);
+
             $crawler = new SimpleXMLElement($response->getBody()->getContents());
             $array = $this->xml2array($crawler);
 
@@ -53,21 +61,20 @@ class Crawl extends Command
 
                 $news = new News($item);
 
-                if ($news->condition()) {
+                if ($news->isAboutCarCrashes() && $news->isNewerThan($input->getOption('from')))
+                {
                     if ($input->getOption('html'))
                     {
-                        $output->writeln($news->toHtml());
+                        $output->writeln($news->__toHtml());
                     }
                     else
                     {
-                        $output->writeln($news->toString());
+                        $output->writeln($news->__toString());
                     }
-
-                    //dump($news->howMany());
                 }
             }
         } catch (RequestException $e) {
-            throw new Exception('Could not access remote site.');
+            throw new Exception(sprintf('Could not access remote site. (%s)', $url));
         }
     }
 
