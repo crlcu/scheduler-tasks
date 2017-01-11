@@ -25,12 +25,13 @@ class News {
 
         $words = [
             'accident',
-            '(auto|maşina|maşină|rutier|stradă|strada|tir)'
+            '(auto|maşină|maşina|masina|rănit|ranit|răniţi|raniti|rutier|stradă|strada|tir)'
         ];
 
         $pattern = sprintf('/(%s)/i', join('[\d\D\w\W\s]+', $words));
 
-        if (preg_match($pattern, $this->fullContent(), $matches)) {
+        if (preg_match($pattern, $this->fullContent(), $matches))
+        {
             $ok = true;
         }
 
@@ -42,39 +43,6 @@ class News {
         $date = new Carbon($date);
 
         return $this->date >= $date;
-    }
-
-    private function howManyRegex()
-    {  
-        $numbers = [
-            'unu',
-            'doi',
-            'trei',
-            'patru',
-            'cinci',
-            'şase', 'sase',
-            'şapte', 'sapte',
-            'opt',
-            'nouă', 'noua',
-            'zece'
-        ];
-
-        $patterns = [];
-
-        foreach ($numbers as $number) {
-            $patterns[] = sprintf('%s [\w\s]+ (răniţi|raniti|mort|morţi|murit)', $number);
-        }
-
-        return sprintf('/%s/', join('|', $patterns));
-    }
-
-    public function howMany()
-    {
-        if (preg_match($this->howManyRegex(), $this->fullContent(), $matches)) {
-            dump($matches);
-            dump(current($matches));
-            dump(end($matches));
-        }
     }
 
     public function __get($field)
