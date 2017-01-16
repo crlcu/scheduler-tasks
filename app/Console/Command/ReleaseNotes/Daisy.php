@@ -60,162 +60,67 @@ class Daisy extends Command
         $this->svnLogCommand = $this->getApplication()->find('svn:log');
         $this->svnStatsCommand = $this->getApplication()->find('svn:stats');
 
-        $svnLogOutput = new BufferedOutput();
+        $notes = '';
 
         // self-service
         if (!$input->getOption('exclude-self-service'))
         {
-            $svnLogOutput->write($this->__title('SelfService:'));
-
-            try {
-                $this->svnStats(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('self-service'),
-                    getenv('DC_REPOSITORY')
-                );
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch stats.");
-            }
-
-            try {
-                $this->svnLog(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('self-service'),
-                    getenv('DC_REPOSITORY'),
-                    getenv('DC_REVISION_URL')
-                );
-
-                $svnLogOutput->writeln('');
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch updates.");
-            }
+            $notes .= $this->watch(
+                'SelfService:',
+                $input,
+                $input->getOption('self-service'),
+                getenv('DC_REPOSITORY'),
+                getenv('DC_REVISION_URL')
+            );
         }
 
         //acc4billing
         if (!$input->getOption('exclude-acc4billing'))
         {
-            $svnLogOutput->write($this->__title('Acc4Billing:'));
-
-            try {
-                $this->svnStats(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('acc4billing'),
-                    getenv('ACC4BILLING_REPOSITORY')
-                );
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch stats.");
-            }
-
-            try {
-                $this->svnLog(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('acc4billing'),
-                    getenv('ACC4BILLING_REPOSITORY'),
-                    getenv('ACC4BILLIN_REVISION_URL')
-                );
-
-                $svnLogOutput->writeln('');
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch updates.");
-            }
+            $notes .= $this->watch(
+                'Acc4Billing:',
+                $input,
+                $input->getOption('acc4billing'),
+                getenv('ACC4BILLING_REPOSITORY'),
+                getenv('ACC4BILLIN_REVISION_URL')
+            );
         }
 
         // dwp
         if (!$input->getOption('exclude-dwp'))
         {
-            $svnLogOutput->write($this->__title('DWP:'));
-            
-            try {
-                $this->svnStats(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('dwp'),
-                    getenv('DWP_REPOSITORY')
-                );
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch stats.");
-            }
-
-            try {
-                $this->svnLog(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('dwp'),
-                    getenv('DWP_REPOSITORY'),
-                    getenv('DWP_REVISION_URL')
-                );
-
-                $svnLogOutput->writeln('');
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch updates.");
-            }
+            $notes .= $this->watch(
+                'DWP:',
+                $input,
+                $input->getOption('dwp'),
+                getenv('DWP_REPOSITORY'),
+                getenv('DWP_REVISION_URL')
+            );
         }
 
         // external-users
         if (!$input->getOption('exclude-external-users'))
         {
-            $svnLogOutput->write($this->__title('External Users:'));
-
-            try {
-                $this->svnStats(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('external-users'),
-                    getenv('EXTERNAL_USERS_REPOSITORY')
-                );
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch stats.");
-            }
-
-            try {
-                $this->svnLog(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('external-users'),
-                    getenv('EXTERNAL_USERS_REPOSITORY'),
-                    getenv('EXTERNAL_USERS_REVISION_URL')
-                );
-
-                $svnLogOutput->writeln('');
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch updates.");
-            }
+            $notes .= $this->watch(
+                'External Users:',
+                $input,
+                $input->getOption('external-users'),
+                getenv('EXTERNAL_USERS_REPOSITORY'),
+                getenv('EXTERNAL_USERS_REVISION_URL')
+            );
         }
 
         // external-api
         if (!$input->getOption('exclude-external-api'))
         {
-            $svnLogOutput->write($this->__title('External API APP:'));
-
-            try {
-                $this->svnStats(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('external-api'),
-                    getenv('EXTERNAL_API_REPOSITORY')
-                );
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch stats.");
-            }
-
-            try {
-                $this->svnLog(
-                    $input,
-                    $svnLogOutput,
-                    $input->getOption('external-api'),
-                    getenv('EXTERNAL_API_REPOSITORY'),
-                    getenv('EXTERNAL_API_REVISION_URL')
-                );
-            } catch (ProcessFailedException $e) {
-                $svnLogOutput->writeln("Couldn't fetch updates.");
-            }
+            $notes .= $this->watch(
+                'External API APP:',
+                $input,
+                $input->getOption('external-api'),
+                getenv('EXTERNAL_API_REPOSITORY'),
+                getenv('EXTERNAL_API_REVISION_URL')
+            );
         }
-
-        $notes = $svnLogOutput->fetch();
 
         // Check if we have to send the email
         if ($input->getOption('send-email'))
@@ -224,6 +129,40 @@ class Daisy extends Command
         }
 
         $output->writeln($notes);
+    }
+
+    protected function watch($title, $input, $revisions, $repository, $revisionUrl)
+    {
+        $output = new BufferedOutput();
+
+        $output->write($this->__title($title));
+
+        try {
+            $this->svnStats(
+                $input,
+                $output,
+                $revisions,
+                $repository
+            );
+        } catch (ProcessFailedException $e) {
+            $output->writeln("Couldn't fetch stats.");
+        }
+
+        if ($input->getOption('stats')) {
+            try {
+                $this->svnLog(
+                    $input,
+                    $output,
+                    $revisions,
+                    $repository,
+                    $revisionUrl
+                );
+            } catch (ProcessFailedException $e) {
+                $output->writeln("Couldn't fetch updates.");
+            }
+        }
+
+        return $output->fetch();
     }
 
     protected function svnLog($input, $output, $revisions, $repository, $revisionUrl)
@@ -245,12 +184,6 @@ class Daisy extends Command
 
     protected function svnStats($input, $output, $revisions, $repository)
     {
-        if (!$input->getOption('stats')) {
-            $output->writeln('');
-
-            return 1;
-        }
-
         $arguments = array(
             '--username'        => $input->getOption('username'),
             '--password'        => $input->getOption('password'),
