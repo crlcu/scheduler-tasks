@@ -92,8 +92,9 @@ class Crawl extends Command
                     $collection->push($news);
                 }
             }
-        } catch (RequestException $e) {
-            throw new Exception(sprintf('Could not access remote site. (%s)', $url));
+        } catch (Exception $e) {
+            // throw new Exception(sprintf('Could not access remote site. (%s)', $url));
+            $output->writeln(sprintf('Nu am putut prelua stirile pentru %s', $url));
         }
 
         return $collection;
