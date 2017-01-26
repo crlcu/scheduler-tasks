@@ -13,13 +13,6 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 use Carbon\Carbon;
 
-use Twig_Loader_Filesystem;
-use Twig_Environment;
-
-use Swift_Message;
-use Swift_SmtpTransport;
-use Swift_Mailer;
-
 class Daisy extends Command
 {
     private $input;
@@ -32,10 +25,7 @@ class Daisy extends Command
             ->setDescription("Outputs the release notes for Daisy Central.")
             ->setDefinition(
                 new InputDefinition([
-                    new InputOption('notify', null, InputOption::VALUE_OPTIONAL, 'List of emails separated by comma'),
                     new InputOption('stats', null, InputOption::VALUE_NONE, 'Include svn stats.'),
-                    new InputOption('send-email', null, InputOption::VALUE_NONE, 'Send email.'),
-                    new InputOption('subject', null, InputOption::VALUE_OPTIONAL, 'Email subject.'),
                     new InputOption('html', null, InputOption::VALUE_NONE, 'Output as html.'),
                     new InputOption('username', null, InputOption::VALUE_OPTIONAL, 'SVN Username'),
                     new InputOption('password', null, InputOption::VALUE_OPTIONAL, 'SVN Password'),
@@ -122,12 +112,6 @@ class Daisy extends Command
             );
         }
 
-        // Check if we have to send the email
-        if ($input->getOption('send-email'))
-        {
-            $this->sendMail(explode(',', $input->getOption('notify')), $notes);
-        }
-
         $output->writeln($notes);
     }
 
@@ -201,32 +185,6 @@ class Daisy extends Command
         $this->svnStatsCommand->run(new ArrayInput($arguments), $output);
 
         return $output->fetch();
-    }
-
-    protected function sendMail($to, $message)
-    {
-        // Create the Transport
-        $transport = Swift_SmtpTransport::newInstance()
-            ->setHost(getenv('MAIL_HOST'))
-            ->setPort(getenv('MAIL_PORT'))
-            ->setEncryption(getenv('MAIL_ENCRYPTION'))
-            ->setUsername(getenv('MAIL_USERNAME'))
-            ->setPassword(getenv('MAIL_PASSWORD'));
-
-        // Create the Mailer using your created Transport
-        $mailer = Swift_Mailer::newInstance($transport);
-
-        $loader = new Twig_Loader_Filesystem(getenv('APP_TEMPLATES'));
-        $twig = new Twig_Environment($loader);
-
-        $mail = Swift_Message::newInstance()
-            ->setSubject($this->input->getOption('subject') ? : sprintf('Release notes for %s', date('d/m/Y')))
-            ->setFrom([getenv('MAIL_FROM_EMAIL') => getenv('MAIL_FROM_NAME')])
-            ->setTo($to)
-            ->setBody($twig->render('emails/release-notes.html', ['message' => $message]), 'text/html');
-
-        // Send the message
-        $result = $mailer->send($mail);
     }
 
     private function __start($revisions)
