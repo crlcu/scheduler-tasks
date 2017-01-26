@@ -243,7 +243,7 @@ class Daisy extends Command
             }
 
             $date = new Carbon($start);
-            $start = sprintf('{%s}', $date->toDateString());
+            $start = sprintf("'{%s}'", $date->toDateTimeString());
         }
         catch (\Exception $e)
         {
@@ -260,7 +260,7 @@ class Daisy extends Command
 
         try {
             $date = new Carbon($end);
-            $end = sprintf('{%s}', $date->toDateString());
+            $end = sprintf("'{%s}'", $date->toDateString());
         }
         catch (\Exception $e)
         {
