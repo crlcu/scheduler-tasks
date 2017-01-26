@@ -138,25 +138,27 @@ class Daisy extends Command
         $output->write($this->__title($title));
 
         try {
-            $this->svnStats(
+            $svnStats = $this->svnStats(
                 $input,
-                $output,
                 $revisions,
                 $repository
             );
+
+            $output->writeln($svnStats);
         } catch (ProcessFailedException $e) {
             $output->writeln("Couldn't fetch stats.");
         }
 
         if ($input->getOption('stats')) {
             try {
-                $this->svnLog(
+                $svnLog = $this->svnLog(
                     $input,
-                    $output,
                     $revisions,
                     $repository,
                     $revisionUrl
                 );
+
+                $output->writeln($svnLog);
             } catch (ProcessFailedException $e) {
                 $output->writeln("Couldn't fetch updates.");
             }
@@ -165,8 +167,10 @@ class Daisy extends Command
         return $output->fetch();
     }
 
-    protected function svnLog($input, $output, $revisions, $repository, $revisionUrl)
+    protected function svnLog($input, $revisions, $repository, $revisionUrl)
     {
+        $output = new BufferedOutput();
+
         $arguments = array(
             '--username'        => $input->getOption('username'),
             '--password'        => $input->getOption('password'),
@@ -177,13 +181,15 @@ class Daisy extends Command
             '--html'            => $input->getOption('html'),
         );
 
-        $returnCode = $this->svnLogCommand->run(new ArrayInput($arguments), $output);
+        $this->svnLogCommand->run(new ArrayInput($arguments), $output);
 
-        return $returnCode;
+        return $output->fetch();
     }
 
-    protected function svnStats($input, $output, $revisions, $repository)
+    protected function svnStats($input, $revisions, $repository)
     {
+        $output = new BufferedOutput();
+
         $arguments = array(
             '--username'        => $input->getOption('username'),
             '--password'        => $input->getOption('password'),
@@ -192,9 +198,9 @@ class Daisy extends Command
             '--repository'      => $repository,
         );
 
-        $returnCode = $this->svnStatsCommand->run(new ArrayInput($arguments), $output);
+        $this->svnStatsCommand->run(new ArrayInput($arguments), $output);
 
-        return $returnCode;
+        return $output->fetch();
     }
 
     protected function sendMail($to, $message)
