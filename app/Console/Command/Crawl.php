@@ -76,6 +76,8 @@ class Crawl extends Command
         $collection = new Collection();
 
         try {
+            libxml_use_internal_errors(true);
+
             $response = $this->http->request('GET', $url);
 
             $crawler = new SimpleXMLElement($response->getBody()->getContents());
@@ -92,6 +94,8 @@ class Crawl extends Command
                     $collection->push($news);
                 }
             }
+
+            libxml_clear_errors();
         } catch (Exception $e) {
             // throw new Exception(sprintf('Could not access remote site. (%s)', $url));
             $output->writeln(sprintf('Nu am putut prelua stirile pentru %s', $url));
