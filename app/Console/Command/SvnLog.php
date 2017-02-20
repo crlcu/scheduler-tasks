@@ -9,6 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
+use Exception;
+use SimpleXMLElement;
+
 use App\Models\LogEntry;
 
 class SvnLog extends Command
@@ -49,30 +52,36 @@ class SvnLog extends Command
             throw new ProcessFailedException($process);
         }
 
-        $xml = simplexml_load_string(utf8_decode($process->getOutput()));
+        try {
+            libxml_use_internal_errors(true);
 
-        if ($xml->logentry)
-        {
-            foreach ($xml->logentry as $log)
+            $xml = new SimpleXMLElement($process->getOutput());
+
+            if ($xml->logentry)
             {
-                $params = (array)$log;
-                $params['revisionUrl'] = $input->getOption('revision-url');
-
-                $entry = new LogEntry($params);
-
-                if ($input->getOption('html'))
+                foreach ($xml->logentry as $log)
                 {
-                    $output->writeln($entry->toHtml());
-                }
-                else
-                {
-                    $output->writeln($entry->toString());
+                    $params = (array)$log;
+                    $params['revisionUrl'] = $input->getOption('revision-url');
+
+                    $entry = new LogEntry($params);
+
+                    if ($input->getOption('html'))
+                    {
+                        $output->writeln($entry->toHtml());
+                    }
+                    else
+                    {
+                        $output->writeln($entry->toString());
+                    }
                 }
             }
-        }
-        else
-        {
-            $output->writeln('No updates.');
+            else
+            {
+                $output->writeln('No updates.');
+            }
+        } catch (Exception $e) {
+            $output->writeln(sprintf('Could not fetch log for %s', $input->getOption('repository')));
         }
     }
 }
