@@ -130,12 +130,12 @@ class Daisy extends Command
                     $repository
                 );
 
-                $output->writeln($svnStats);
+                $output->write($svnStats);
             } catch (ProcessFailedException $e) {
-                $output->writeln("Couldn't fetch stats.");
+                $output->write("Couldn't fetch stats.");
             }   
         }
-        
+
         try {
             $svnLog = $this->svnLog(
                 $input,
@@ -144,9 +144,9 @@ class Daisy extends Command
                 $revisionUrl
             );
 
-            $output->writeln($svnLog ? : 'No updates.');
+            $output->writeln($svnLog ? : "No updates.\n");
         } catch (ProcessFailedException $e) {
-            $output->writeln("Couldn't fetch updates.");
+            $output->writeln("Couldn't fetch updates.\n");
         }
 
         return $output->fetch();
@@ -239,7 +239,7 @@ class Daisy extends Command
     {
         if ($this->input->getOption('html'))
         {
-            $title = sprintf('<b style="font-size: 14px">%s</b>', $title);
+            $title = sprintf('<b style="font-size: 14px">%s</b> ', $title);
         }
 
         return $title;
