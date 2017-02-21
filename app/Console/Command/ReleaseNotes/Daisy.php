@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
 use Carbon\Carbon;
+use Exception;
 
 class Daisy extends Command
 {
@@ -209,7 +210,7 @@ class Daisy extends Command
             $date = new Carbon($start);
             $start = sprintf("'{%s}'", $date->toDateTimeString());
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             # do nothing
         }
@@ -224,9 +225,9 @@ class Daisy extends Command
 
         try {
             $date = new Carbon($end);
-            $end = sprintf("'{%s}'", $date->toDateString());
+            $end = sprintf("'{%s}'", $date->toDateTimeString());
         }
-        catch (\Exception $e)
+        catch (Exception $e)
         {
             # do nothing
         }

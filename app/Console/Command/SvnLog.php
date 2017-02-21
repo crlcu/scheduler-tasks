@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
+use Carbon\Carbon;
 use Exception;
 use SimpleXMLElement;
 
@@ -35,6 +36,9 @@ class SvnLog extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $startDate = $this->isDate($input->getOption('start'));
+        $endDate = $this->isDate($input->getOption('end'));
+
         $cmd = sprintf("echo 'p' | svn log --username '%s' --password '%s' -r %s:%s --xml %s",
             $input->getOption('username'),
             $input->getOption('password'),
@@ -65,7 +69,20 @@ class SvnLog extends Command
                     $params['revisionUrl'] = $input->getOption('revision-url');
 
                     $entry = new LogEntry($params);
+                    
+                    // Because svn has issue when asking for log between dates
+                    // we need to manually check if revision date is between required interval
+                    if ($startDate && $entry->date() < $startDate)
+                    {
+                        continue;
+                    }
 
+                    if ($endDate && $entry->date() > $endDate)
+                    {
+                        continue;
+                    }
+
+                    // Output as required (html/string)
                     if ($input->getOption('html'))
                     {
                         $output->writeln($entry->toHtml());
@@ -83,5 +100,20 @@ class SvnLog extends Command
         } catch (Exception $e) {
             $output->writeln(sprintf('Could not fetch log for %s', $input->getOption('repository')));
         }
+    }
+
+    private function isDate($string)
+    {
+        $date = false;
+
+        try {
+            $date = (new Carbon(str_replace(['{', '}'], '', $string)))->toDateTimeString();
+        }
+        catch (Exception $e)
+        {
+            # do nothing
+        }
+
+        return $date;
     }
 }
