@@ -122,19 +122,6 @@ class Daisy extends Command
 
         $output->write($this->__title($title));
 
-        try {
-            $svnLog = $this->svnLog(
-                $input,
-                $revisions,
-                $repository,
-                $revisionUrl
-            );
-
-            $output->writeln($svnLog ? : 'No updates.');
-        } catch (ProcessFailedException $e) {
-            $output->writeln("Couldn't fetch updates.");
-        }
-
         if ($input->getOption('stats')) {
             try {
                 $svnStats = $this->svnStats(
@@ -147,6 +134,19 @@ class Daisy extends Command
             } catch (ProcessFailedException $e) {
                 $output->writeln("Couldn't fetch stats.");
             }   
+        }
+        
+        try {
+            $svnLog = $this->svnLog(
+                $input,
+                $revisions,
+                $repository,
+                $revisionUrl
+            );
+
+            $output->writeln($svnLog ? : 'No updates.');
+        } catch (ProcessFailedException $e) {
+            $output->writeln("Couldn't fetch updates.");
         }
 
         return $output->fetch();
