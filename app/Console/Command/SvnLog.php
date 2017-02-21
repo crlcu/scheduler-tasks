@@ -61,41 +61,34 @@ class SvnLog extends Command
 
             $xml = new SimpleXMLElement($process->getOutput());
 
-            if ($xml->logentry)
+            foreach ($xml->logentry as $log)
             {
-                foreach ($xml->logentry as $log)
+                $params = (array)$log;
+                $params['revisionUrl'] = $input->getOption('revision-url');
+
+                $entry = new LogEntry($params);
+
+                // Because svn has issue when asking for log between dates
+                // we need to manually check if revision date is between required interval
+                if ($startDate && $entry->date() < $startDate)
                 {
-                    $params = (array)$log;
-                    $params['revisionUrl'] = $input->getOption('revision-url');
-
-                    $entry = new LogEntry($params);
-                    
-                    // Because svn has issue when asking for log between dates
-                    // we need to manually check if revision date is between required interval
-                    if ($startDate && $entry->date() < $startDate)
-                    {
-                        continue;
-                    }
-
-                    if ($endDate && $entry->date() > $endDate)
-                    {
-                        continue;
-                    }
-
-                    // Output as required (html/string)
-                    if ($input->getOption('html'))
-                    {
-                        $output->writeln($entry->toHtml());
-                    }
-                    else
-                    {
-                        $output->writeln($entry->toString());
-                    }
+                    continue;
                 }
-            }
-            else
-            {
-                $output->writeln('No updates.');
+
+                if ($endDate && $entry->date() > $endDate)
+                {
+                    continue;
+                }
+
+                // Output as required (html/string)
+                if ($input->getOption('html'))
+                {
+                    $output->writeln($entry->toHtml());
+                }
+                else
+                {
+                    $output->writeln($entry->toString());
+                }
             }
         } catch (Exception $e) {
             $output->writeln(sprintf('Could not fetch log for %s', $input->getOption('repository')));
@@ -107,7 +100,7 @@ class SvnLog extends Command
         $date = false;
 
         try {
-            $date = (new Carbon(str_replace(['{', '}'], '', $string)))->toDateTimeString();
+            $date = (new Carbon(str_replace(["'{", '{', "}'", '}'], '', $string)))->toDateTimeString();
         }
         catch (Exception $e)
         {
