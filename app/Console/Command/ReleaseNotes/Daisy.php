@@ -199,11 +199,11 @@ class Daisy extends Command
 
                 if ($today->dayOfWeek == 1)
                 {
-                    $start = 'last thursday';
+                    $start = sprintf('last wednesday %s', getenv('RELEASE_TIME'));
                 }
-                elseif ($today->dayOfWeek == 3)
+                elseif ($today->dayOfWeek == 4)
                 {
-                    $start = 'last tuesday';
+                    $start = sprintf('last monday %s', getenv('RELEASE_TIME'));
                 }
             }
 
@@ -221,7 +221,8 @@ class Daisy extends Command
     private function __end($revisions)
     {
         $parts = explode(',', $revisions);
-        $end = isset($parts[1]) ? $parts[1] : 'HEAD';
+        $date = new Carbon(sprintf('today %s', getenv('RELEASE_TIME')));
+        $end = isset($parts[1]) ? $parts[1] : sprintf("'{%s}'", $date->toDateTimeString());
 
         try {
             $date = new Carbon($end);
@@ -240,6 +241,8 @@ class Daisy extends Command
         if ($this->input->getOption('html'))
         {
             $title = sprintf('<b style="font-size: 14px">%s</b> ', $title);
+        } else {
+            $title = sprintf('%s ', $title);
         }
 
         return $title;
