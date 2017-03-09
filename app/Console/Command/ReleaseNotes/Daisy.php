@@ -65,53 +65,53 @@ class Daisy extends Command
             );
         }
 
-        //acc4billing
-        if (!$input->getOption('exclude-acc4billing'))
-        {
-            $notes .= $this->watch(
-                'Acc4Billing:',
-                $input,
-                $input->getOption('acc4billing'),
-                getenv('ACC4BILLING_REPOSITORY'),
-                getenv('ACC4BILLIN_REVISION_URL')
-            );
-        }
+        // //acc4billing
+        // if (!$input->getOption('exclude-acc4billing'))
+        // {
+        //     $notes .= $this->watch(
+        //         'Acc4Billing:',
+        //         $input,
+        //         $input->getOption('acc4billing'),
+        //         getenv('ACC4BILLING_REPOSITORY'),
+        //         getenv('ACC4BILLIN_REVISION_URL')
+        //     );
+        // }
 
-        // dwp
-        if (!$input->getOption('exclude-dwp'))
-        {
-            $notes .= $this->watch(
-                'DWP:',
-                $input,
-                $input->getOption('dwp'),
-                getenv('DWP_REPOSITORY'),
-                getenv('DWP_REVISION_URL')
-            );
-        }
+        // // dwp
+        // if (!$input->getOption('exclude-dwp'))
+        // {
+        //     $notes .= $this->watch(
+        //         'DWP:',
+        //         $input,
+        //         $input->getOption('dwp'),
+        //         getenv('DWP_REPOSITORY'),
+        //         getenv('DWP_REVISION_URL')
+        //     );
+        // }
 
-        // external-users
-        if (!$input->getOption('exclude-external-users'))
-        {
-            $notes .= $this->watch(
-                'External Users:',
-                $input,
-                $input->getOption('external-users'),
-                getenv('EXTERNAL_USERS_REPOSITORY'),
-                getenv('EXTERNAL_USERS_REVISION_URL')
-            );
-        }
+        // // external-users
+        // if (!$input->getOption('exclude-external-users'))
+        // {
+        //     $notes .= $this->watch(
+        //         'External Users:',
+        //         $input,
+        //         $input->getOption('external-users'),
+        //         getenv('EXTERNAL_USERS_REPOSITORY'),
+        //         getenv('EXTERNAL_USERS_REVISION_URL')
+        //     );
+        // }
 
-        // external-api
-        if (!$input->getOption('exclude-external-api'))
-        {
-            $notes .= $this->watch(
-                'External API APP:',
-                $input,
-                $input->getOption('external-api'),
-                getenv('EXTERNAL_API_REPOSITORY'),
-                getenv('EXTERNAL_API_REVISION_URL')
-            );
-        }
+        // // external-api
+        // if (!$input->getOption('exclude-external-api'))
+        // {
+        //     $notes .= $this->watch(
+        //         'External API APP:',
+        //         $input,
+        //         $input->getOption('external-api'),
+        //         getenv('EXTERNAL_API_REPOSITORY'),
+        //         getenv('EXTERNAL_API_REVISION_URL')
+        //     );
+        // }
 
         $output->writeln($notes);
     }
@@ -201,7 +201,7 @@ class Daisy extends Command
                 {
                     $start = sprintf('last wednesday %s', getenv('RELEASE_TIME'));
                 }
-                elseif ($today->dayOfWeek == 4)
+                elseif ($today->dayOfWeek == 3)
                 {
                     $start = sprintf('last monday %s', getenv('RELEASE_TIME'));
                 }
