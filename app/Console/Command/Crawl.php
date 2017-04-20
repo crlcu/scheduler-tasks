@@ -37,7 +37,7 @@ class Crawl extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $urls = split(', ', $input->getOption('url'));
+        $urls = explode(', ', $input->getOption('url'));
 
         $collection = new Collection();
 
