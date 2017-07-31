@@ -29,6 +29,7 @@ class Crawl extends Command
                     new InputOption('url', null, InputOption::VALUE_REQUIRED, 'URL'),
                     new InputOption('from', null, InputOption::VALUE_OPTIONAL, 'News newer than.', 'yesterday'),
                     new InputOption('html', null, InputOption::VALUE_NONE, 'Output as html.'),
+                    new InputOption('schema', null, InputOption::VALUE_OPTIONAL, 'Schema to be used.', 'car-crash'),
                 ])
             );
         
@@ -73,6 +74,9 @@ class Crawl extends Command
 
     protected function crawlUrl($url, $input, $output)
     {
+        $schemaName = "\\App\\Schemas\\" . str_replace('-', '', ucwords($input->getOption('schema'), '-'));
+        $schema = new $schemaName();
+
         $collection = new Collection();
 
         try {
@@ -89,7 +93,7 @@ class Crawl extends Command
 
                 $news = new News($item);
 
-                if ($news->isAboutCarCrashes() && $news->isNewerThan($input->getOption('from')))
+                if ($schema->match($news) && $news->isNewerThan($input->getOption('from')))
                 {
                     $collection->push($news);
                 }

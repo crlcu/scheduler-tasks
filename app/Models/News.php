@@ -19,25 +19,6 @@ class News {
         return sprintf('%s %s', $this->title, $this->description);
     }
 
-    public function isAboutCarCrashes()
-    {
-        $ok = false;
-
-        $words = [
-            'accident',
-            '(auto|maşină|maşina|masina|rănit|ranit|răniţi|raniti|rutier|stradă|strada|tir)'
-        ];
-
-        $pattern = sprintf('/(%s)/i', join('[\d\D\w\W\s]+', $words));
-
-        if (preg_match($pattern, $this->fullContent(), $matches))
-        {
-            $ok = true;
-        }
-
-        return $ok;
-    }
-
     public function isNewerThan($date)
     {
         $date = new Carbon($date);
