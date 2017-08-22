@@ -44,11 +44,11 @@ class Crawl extends Command
 
         foreach ($urls as $url)
         {
-            $local = $this->crawlUrl($url, $input, $output);
+            $tmp = $this->crawlUrl($url, $input, $output);
 
-            if ($local->count())
+            if ($tmp->count())
             {
-                $collection = $collection->merge($local);
+                $collection = $collection->merge($tmp);
             }
         }
 
