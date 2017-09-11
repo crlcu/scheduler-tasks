@@ -10,13 +10,14 @@
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "nesbot/carbon": "^1.21",
-        "symfony/console": "^3.1",
-        "symfony/process": "^3.1",
         "swiftmailer/swiftmailer": "^5.4",
         "twig/twig": "~1.0",
         "vlucas/phpdotenv": "^2.4",
-        "illuminate/database": "^5.3",
-        "illuminate/support": "^5.3"
+        "illuminate/database": "^5.4",
+        "illuminate/support": "^5.5",
+        "symfony/console": "^3.3",
+        "symfony/process": "^3.3",
+        "laravel/dusk": "^2.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^3.1"
