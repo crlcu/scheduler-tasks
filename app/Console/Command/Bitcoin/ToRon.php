@@ -69,7 +69,12 @@ class ToRon extends Command
 
         if ($input->getOption('check'))
         {
-            exit(self::check($input, $output, $last));
+            if (self::check($input, $output, $last))
+            {
+                $output->writeln("Checked: YES");
+            } else {
+                $output->writeln("Checked: NO");
+            }
         }
     }
 }
