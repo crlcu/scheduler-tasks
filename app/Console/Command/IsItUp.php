@@ -9,7 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use Exception;
 use GuzzleHttp\Client as Http;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 
 class IsItUp extends Command
 {
@@ -31,18 +33,27 @@ class IsItUp extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $line = '';
+
         try {
             $response = $this->http->request('GET', $input->getOption('url'), [
                 'debug' => $input->getOption('debug')
             ]);
 
             if ($input->getOption('debug')) {
-                $output->writeln($response->getBody()->getContents());
+                $line = $response->getBody()->getContents();
             } else {
-                $output->writeln('Status: ' . $response->getStatusCode());
+                $line = $response->getStatusCode();
             }
-        } catch (RequestException $e) {
-            throw new Exception('Is it down');
+        } catch (Exception $e) {
+            if ($e instanceof ConnectException)
+            {
+                $line = 'Not reachable';
+            } elseif ($e instanceof BadResponseException || $e instanceof ClientException) {
+                $line = $e->getResponse()->getStatusCode();
+            }
         }
+
+        $output->writeln("Status: $line");
     }
 }
