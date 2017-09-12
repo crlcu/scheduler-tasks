@@ -30,7 +30,9 @@ class Sell extends Command
             ->setDescription("Returns the bitcoin price in euro.")
             ->setDefinition(
                 new InputDefinition([
-                    new InputOption('amount', null, InputOption::VALUE_OPTIONAL, 'Amount', 1),
+                    new InputOption('amount', null, InputOption::VALUE_REQUIRED, 'Amount', 1),
+                    new InputOption('username', null, InputOption::VALUE_REQUIRED, 'Username'),
+                    new InputOption('password', null, InputOption::VALUE_REQUIRED, 'Password'),
                 ])
             );
 
@@ -42,17 +44,14 @@ class Sell extends Command
         $browser = new Browser($this->driver());
         
         $browser->visit('https://www.btcxchange.ro/login')
-                ->type('username', getenv('BTCXCHANGE_USERNAME'))
-                ->type('password', getenv('BTCXCHANGE_PASSWORD'))
+                ->type('username', $input->getOption('username'))
+                ->type('password', $input->getOption('password'))
                 ->press('[type="submit"]')
                 ->waitUntilMissing('[name="username"]', 10)
-                ->assertPathIs('/account')
                 ->press('[href="/order"]')
-                ->assertSee('Cumpara')
                 ->type('sellInstantAmount', $input->getOption('amount'))
                 ->press('#sellInstantButton')
                 ->waitFor('.alert.intervention', 10)
-                ->assertSee('Fonduri insuficiente.')
                 ->quit();
     }
 

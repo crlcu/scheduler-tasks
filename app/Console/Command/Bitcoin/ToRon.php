@@ -11,14 +11,28 @@ use Exception;
 use GuzzleHttp\Client as Http;
 use GuzzleHttp\Exception\RequestException;
 
+use App\Console\Traits\Check;
+
 class ToRon extends Command
 {
+    use Check;
+
     private $http;
 
     protected function configure()
     {
         $this->setName('bitcoin:ron')
-            ->setDescription("Returns the bitcoin price in ron.");
+            ->setDescription("Returns the bitcoin price in ron.")
+            ->setDefinition(
+                new InputDefinition([
+                    new InputOption('check', null, InputOption::VALUE_NONE, 'Check value'),
+                    new InputOption('method', null, InputOption::VALUE_OPTIONAL, 'Method', 'eq'),
+                    new InputOption('value', null, InputOption::VALUE_OPTIONAL, 'Value'),
+                    new InputOption('regex', null, InputOption::VALUE_OPTIONAL, 'Regex'),
+                    new InputOption('min', null, InputOption::VALUE_OPTIONAL, 'Min', 0),
+                    new InputOption('max', null, InputOption::VALUE_OPTIONAL, 'Max', 0),
+                ])
+            );
         
         $this->http = new Http();
     }
@@ -45,12 +59,17 @@ class ToRon extends Command
 
             $last = $decoded['last'];
 
-            // // usleep: this will help having a nice graph
+            // usleep: this will help having a nice graph
             usleep($last);
 
             $output->writeln($last);
         } catch (RequestException $e) {
             throw new Exception("Can't fetch bitcoin price.");
+        }
+
+        if ($input->getOption('check'))
+        {
+            exit(self::check($input, $output, $last));
         }
     }
 }
