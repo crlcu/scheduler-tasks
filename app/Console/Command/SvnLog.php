@@ -39,11 +39,13 @@ class SvnLog extends Command
         $startDate = $this->isDate($input->getOption('start'));
         $endDate = $this->isDate($input->getOption('end'));
 
+        $end = $endDate ? sprintf("'{%s}'", (new Carbon($endDate))->addHour()->toDateTimeString()) : $input->getOption('end');
+
         $cmd = sprintf("echo 'p' | svn log --username '%s' --password '%s' -r %s:%s --xml %s",
             $input->getOption('username'),
             $input->getOption('password'),
             $input->getOption('start'),
-            $input->getOption('end'),
+            $end,
             $input->getOption('repository')
         );
 
@@ -68,14 +70,10 @@ class SvnLog extends Command
 
                 $entry = new LogEntry($params);
 
-                // Because svn has issue when asking for log between dates
-                // we need to manually check if revision date is between required interval
-                if ($startDate && $entry->date() < $startDate)
-                {
-                    continue;
-                }
-
-                if ($endDate && $entry->date() > $endDate)
+                // When you specify a date,
+                // Subversion resolves that date to the most recent revision of the repository as of that date
+                // That's why we have to check the date interval again
+                if (($startDate && $entry->date() < $startDate) || ($endDate && $entry->date() > $endDate))
                 {
                     continue;
                 }

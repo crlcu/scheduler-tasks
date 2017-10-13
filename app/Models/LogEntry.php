@@ -62,7 +62,7 @@ class LogEntry {
 
     public function toString()
     {
-        return sprintf('%s - %s', $this->message(), $this->author());
+        return sprintf('%s: %s - %s', $this->date(), $this->message(), $this->author());
     }
 
     public function toHtml()
