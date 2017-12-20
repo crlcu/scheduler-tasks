@@ -59,9 +59,6 @@ class ToRon extends Command
 
             $last = $decoded['last'];
 
-            // usleep: this will help having a nice graph
-            usleep($last);
-
             $output->writeln($last);
         } catch (RequestException $e) {
             throw new Exception("Can't fetch bitcoin price.");
