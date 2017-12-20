@@ -7,55 +7,81 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-
-use App\Console\Traits\Check;
+use Facebook\WebDriver\Chrome\ChromeOptions;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Laravel\Dusk\Chrome\SupportsChrome;
+use Laravel\Dusk\Browser;
 
 class Buy extends Command
 {
-    use Check;
+    use SupportsChrome;
 
-    private $http;
-
+    /**
+     * The callbacks that should be run on class tear down.
+     *
+     * @var array
+     */
+    protected static $afterClassCallbacks = [];
+    
     protected function configure()
     {
         $this->setName('bitcoin:btcxchange:buy')
-            ->setDescription("Returns the bitcoin price in ron.")
+            ->setDescription("Returns the bitcoin price in euro.")
             ->setDefinition(
                 new InputDefinition([
-                    new InputOption('check', null, InputOption::VALUE_NONE, 'Check value'),
-                    new InputOption('method', null, InputOption::VALUE_OPTIONAL, 'Method', 'eq'),
-                    new InputOption('value', null, InputOption::VALUE_OPTIONAL, 'Value'),
-                    new InputOption('regex', null, InputOption::VALUE_OPTIONAL, 'Regex'),
-                    new InputOption('min', null, InputOption::VALUE_OPTIONAL, 'Min', 0),
-                    new InputOption('max', null, InputOption::VALUE_OPTIONAL, 'Max', 0),
+                    new InputOption('amount', null, InputOption::VALUE_REQUIRED, 'Amount', 1),
+                    new InputOption('username', null, InputOption::VALUE_REQUIRED, 'Username'),
+                    new InputOption('password', null, InputOption::VALUE_REQUIRED, 'Password'),
                 ])
             );
+
+        static::startChromeDriver();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $process = new Process("curl -s https://www.btcxchange.com/  | grep liveHigh | grep -ioE '([0-9]*\.[0-9]+|[0-9]+)'");
-        $process->run();
+        $browser = new Browser($this->driver());
+        
+        $browser->visit('https://www.btcxchange.com/login')
+            ->type('username', $input->getOption('username'))
+            ->type('password', $input->getOption('password'))
+            ->press('.btn--size-l')
+            ->waitUntilMissing('[name="username"]', 10)
+            ->press('[href="/order"]')
+            ->type('buyInstantValue', $input->getOption('amount'))
+            // ->press('.js-buy-btc-btn')
+            ->waitFor('.alert.intervention', 10)
+            ->quit();
+    }
 
-        // executes after the command finishes
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
+    /**
+     * Create the RemoteWebDriver instance.
+     *
+     * @return \Facebook\WebDriver\Remote\RemoteWebDriver
+     */
+    protected function driver()
+    {
+        $options = (new ChromeOptions)->addArguments([
+            '--disable-gpu',
+            '--headless'
+        ]);
 
-        $last = $process->getOutput();
+        return RemoteWebDriver::create(
+            'http://localhost:9515', DesiredCapabilities::chrome()->setCapability(
+                ChromeOptions::CAPABILITY, $options
+            )
+        );
+    }
 
-        $output->writeln(str_replace("\n", '', $last));
-
-        if ($input->getOption('check'))
-        {
-            if (self::check($input, $output, $last))
-            {
-                $output->writeln("Checked: YES");
-            } else {
-                $output->writeln("Checked: NO");
-            }
-        }
+    /**
+     * Register an "after class" tear down callback.
+     *
+     * @param  \Closure  $callback
+     * @return void
+     */
+    public static function afterClass(\Closure $callback)
+    {
+        static::$afterClassCallbacks[] = $callback;
     }
 }
