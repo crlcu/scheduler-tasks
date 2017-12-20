@@ -1,7 +1,8 @@
 <?php
 
 return $commands = [
-    App\Console\Command\Bitcoin\BTCxChange::class,
+    App\Console\Command\Bitcoin\BTCxChange\Buy::class,
+    App\Console\Command\Bitcoin\BTCxChange\Sell::class,
     App\Console\Command\Bitcoin\Sell::class,
     App\Console\Command\Bitcoin\ToEuro::class,
     App\Console\Command\Bitcoin\ToRon::class,

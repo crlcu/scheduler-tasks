@@ -1,5 +1,5 @@
 <?php
-namespace App\Console\Command\Bitcoin;
+namespace App\Console\Command\Bitcoin\BTCxChange;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
@@ -12,7 +12,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 
 use App\Console\Traits\Check;
 
-class BTCxChange extends Command
+class Sell extends Command
 {
     use Check;
 
@@ -20,7 +20,7 @@ class BTCxChange extends Command
 
     protected function configure()
     {
-        $this->setName('bitcoin:btcxchange')
+        $this->setName('bitcoin:btcxchange:sell')
             ->setDescription("Returns the bitcoin price in ron.")
             ->setDefinition(
                 new InputDefinition([
