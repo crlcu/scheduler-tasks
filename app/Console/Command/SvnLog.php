@@ -39,12 +39,24 @@ class SvnLog extends Command
         $startDate = $this->isDate($input->getOption('start'));
         $endDate = $this->isDate($input->getOption('end'));
 
-        $end = $endDate ? sprintf("'{%s}'", (new Carbon($endDate))->addHour()->toDateTimeString()) : $input->getOption('end');
+        $start = $startDate ?
+            sprintf("'{%s}'", (new Carbon($startDate))
+                ->subMinutes(getenv('START_TIME_MARGIN') ? : 0)
+                ->toDateTimeString()
+            ) : 
+            $input->getOption('start');
+
+        $end = $endDate ?
+            sprintf("'{%s}'", (new Carbon($endDate))
+                    ->addMinutes(getenv('END_TIME_MARGIN') ? : 0)
+                    ->toDateTimeString()
+            ) : 
+            $input->getOption('end');
 
         $cmd = sprintf("echo 'p' | svn log --username '%s' --password '%s' -r %s:%s --xml %s",
             $input->getOption('username'),
             $input->getOption('password'),
-            $input->getOption('start'),
+            $start,
             $end,
             $input->getOption('repository')
         );
