@@ -17,6 +17,11 @@ class LogEntry {
         return $this->fields['author'];
     }
 
+    public function case()
+    {
+        return $this->fogbugz() ? : $this->sentry();
+    }
+
     public function date()
     {
         return (new Carbon($this->fields['date']))
@@ -48,15 +53,27 @@ class LogEntry {
         return $this->fields['revisionUrl'];
     }
 
+    public function sentry()
+    {
+        $message = $this->message();
+        $matches = [];
+
+        $ok = preg_match('/(sentry|fixes|)?(\w+\-\w+)/i', $message, $matches);
+
+        return isset($matches[2]) ? $matches[2] : null;
+    }
+
     public function toArray()
     {
         return [
             'author'        => $this->author(),
-            'case'          => $this->fogbugz(),
+            'case'          => $this->case(),
             'date'          => $this->date(),
+            'fogbugz'       => $this->fogbugz(),
             'message'       => $this->message(),
             'revision'      => $this->revision(),
             'revisionUrl'   => $this->revisionUrl() . $this->revision(),
+            'sentry'        => $this->sentry(),
         ];
     }
 
@@ -80,9 +97,14 @@ class LogEntry {
 
         $html .= sprintf(', %s - <b>%s</b>', $this->message(), $this->author());
 
-        if ($this->fogbugz())
+        if ($this->fogbugz() && getenv('FOGBUGZ_URL'))
         {
-            $html .= sprintf(' <a href="https://daisydev.fogbugz.com/f/cases/%s">View case</a>', $this->fogbugz());
+            $html .= sprintf(' <a href="' . getenv('FOGBUGZ_URL') . '">View case</a>', $this->case());
+        }
+
+        if ($this->sentry() && getenv('SENTRY_URL'))
+        {
+            $html .= sprintf(' <a href="' . getenv('SENTRY_URL') . '">View issue</a>', $this->case());
         }
 
         return $html;
